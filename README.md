@@ -1,5 +1,8 @@
 # **Peleg Recoil**
 
+### ***Preview:**
+https://www.youtube.com/watch?v=MXBYxAwxjv0
+
 ### **Description:**
 KRS Recoil is a highly configurable and realistic recoil system for FiveM, inspired by the Wildstar recoil mechanics. The script allows for detailed customization of every weapon's recoil, offering a more immersive and dynamic shooting experience. The script is open-source, allowing you to modify and tailor it to your specific needs.
 
