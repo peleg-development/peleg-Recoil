@@ -403,7 +403,6 @@ body {
                 },
                 
                 saveAndExit() {
-                    // Send save event to Lua
                     fetch(`https://${GetParentResourceName()}/peleg:client:saveRecoil`, {
                         method: 'POST',
                         headers: {
@@ -416,7 +415,6 @@ body {
                 }
             },
             mounted() {
-                // Listen for messages from Lua
                 window.addEventListener('message', (event) => {
                     const data = event.data;
                     
