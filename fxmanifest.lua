@@ -5,15 +5,21 @@ shared_script "@SecureServe/src/module/module.js"
 file "@SecureServe/secureserve.key"
 lua54 'yes'
 game 'gta5'
-author 'KurdY'
+author 'Peleg'
 description 'A highly advanced recoil script for fivem'
+
+
+shared_scripts {
+    'config.lua',
+    '@ox_lib/init.lua'
+}
+
 client_scripts {
     'config.lua',
     'client.lua'
 }
 
 server_scripts {
-    'config.lua',
     'server.lua'
 }
 
@@ -23,4 +29,3 @@ files {
 }
 
 ui_page 'ui.html'
-kr = true -- :()

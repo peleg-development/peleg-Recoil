@@ -1,321 +1,432 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recoil Control</title>
+    <title>Weapon Control</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Orbitron', monospace;
-    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0a0e14 100%);
-    overflow: hidden;
-}
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0a0e14 100%);
+            overflow: hidden;
+        }
 
-#app {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    pointer-events: none;
-}
+        #app {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+        }
 
-.recoil-panel {
-    position: absolute;
-    top: 50%;
-    left: 2%;
-    width: 380px;
-    background: #1a1b1f;
-    border-radius: 20px;
-    border: 2px solid rgba(34, 211, 170, 0.3);
-    box-shadow: 
-        0 25px 50px rgba(0, 0, 0, 0.8),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    padding: 28px;
-    pointer-events: auto;
-    transform: translate(0, -50%);
-    transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
-    position: relative;
-    overflow: hidden;
-}
+        .hud-panel {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 20, 0.75);
+            border: 1px solid rgba(34, 211, 170, 0.25);
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            pointer-events: none;
+        }
 
-.recoil-panel.hidden {
-    transform: translate(120%, -50%) scale(0.8);
-    opacity: 0;
-}
+        .hud-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-.panel-header {
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-}
+        .hud-value {
+            color: #ffffff;
+            font-weight: 900;
+            font-size: 14px;
+        }
 
-.header-title {
-    color: #22d3aa;
-    font-size: 24px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 8px;
-    text-shadow: 0 0 20px rgba(34, 211, 170, 0.4);
-    animation: glow 2s ease-in-out infinite alternate;
-}
+        .recoil-panel {
+            position: absolute;
+            top: 50%;
+            left: 2%;
+            width: 380px;
+            background: #1a1b1f;
+            border-radius: 20px;
+            border: 2px solid rgba(34, 211, 170, 0.3);
+            box-shadow:
+                0 25px 50px rgba(0, 0, 0, 0.8),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            padding: 28px;
+            pointer-events: auto;
+            transform: translate(0, -50%);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
 
-@keyframes glow {
-    from { text-shadow: 0 0 20px rgba(34, 211, 170, 0.4); }
-    to { text-shadow: 0 0 25px rgba(34, 211, 170, 0.6); }
-}
+        .recoil-panel.hidden {
+            transform: translate(120%, -50%) scale(0.8);
+            opacity: 0;
+        }
 
-.header-subtitle {
-    color: rgba(255, 255, 255, 0.5);
-    font-size: 12px;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+        .panel-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
 
-.recoil-display {
-    background: linear-gradient(135deg, rgba(34, 211, 170, 0.04) 0%, rgba(34, 211, 170, 0.02) 100%);
-    border: 1px solid rgba(34, 211, 170, 0.25);
-    border-radius: 15px;
-    padding: 25px;
-    text-align: center;
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
-}
+        .header-title {
+            color: #22d3aa;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 20px rgba(34, 211, 170, 0.4);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
 
-.recoil-label {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 10px;
-}
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 20px rgba(34, 211, 170, 0.4);
+            }
 
-.recoil-value {
-    color: #ffffff;
-    font-size: 42px;
-    font-weight: 900;
-    line-height: 1;
-    position: relative;
-    text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-}
+            to {
+                text-shadow: 0 0 25px rgba(34, 211, 170, 0.6);
+            }
+        }
 
-.recoil-bar {
-    width: 100%;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: 2px;
-    margin-top: 15px;
-    overflow: hidden;
-    position: relative;
-}
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 12px;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-.recoil-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #1a9d72, #22d3aa);
-    border-radius: 2px;
-    transition: width 0.3s ease;
-    box-shadow: 0 0 10px rgba(34, 211, 170, 0.4);
-}
+        .recoil-display {
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.04) 0%, rgba(34, 211, 170, 0.02) 100%);
+            border: 1px solid rgba(34, 211, 170, 0.25);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
 
-.controls-section {
-    margin-bottom: 25px;
-}
+        .recoil-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+        }
 
-.control-row {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 12px;
-}
+        .recoil-value {
+            color: #ffffff;
+            font-size: 42px;
+            font-weight: 900;
+            line-height: 1;
+            position: relative;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
 
-.control-card {
-    flex: 1;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.005));
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 16px;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-}
+        .recoil-bar {
+            width: 100%;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            margin-top: 15px;
+            overflow: hidden;
+            position: relative;
+        }
 
-.control-card:hover {
-    background: linear-gradient(135deg, rgba(34, 211, 170, 0.08), rgba(34, 211, 170, 0.04));
-    border-color: rgba(34, 211, 170, 0.25);
-    transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(34, 211, 170, 0.15);
-}
+        .recoil-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a9d72, #22d3aa);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(34, 211, 170, 0.4);
+        }
 
-.control-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
-    transition: left 0.5s;
-}
+        .controls-section {
+            margin-bottom: 25px;
+        }
 
-.control-card:hover::before {
-    left: 100%;
-}
+        .control-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
 
-.control-content {
-    text-align: center;
-    position: relative;
-    z-index: 1;
-}
+        .control-card {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.005));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
 
-.control-icon {
-    width: 32px;
-    height: 32px;
-    margin: 0 auto 8px;
-    background: linear-gradient(135deg, rgba(34, 211, 170, 0.15), rgba(34, 211, 170, 0.08));
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+        .control-card:hover {
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.08), rgba(34, 211, 170, 0.04));
+            border-color: rgba(34, 211, 170, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(34, 211, 170, 0.15);
+        }
 
-.control-icon svg {
-    width: 18px;
-    height: 18px;
-    fill: #22d3aa;
-}
+        .control-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.02), transparent);
+            transition: left 0.5s;
+        }
 
-.control-text {
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 6px;
-}
+        .control-card:hover::before {
+            left: 100%;
+        }
 
-.control-key {
-    background: linear-gradient(135deg, #2a3441, #3d4a5c);
-    color: #22d3aa;
-    padding: 4px 8px;
-    border-radius: 6px;
-    font-size: 10px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    border: 1px solid rgba(34, 211, 170, 0.25);
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
-}
+        .control-content {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
 
-.save-section {
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    padding-top: 25px;
-}
+        .control-icon {
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 8px;
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.15), rgba(34, 211, 170, 0.08));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.save-button {
-    width: 100%;
-    background: linear-gradient(135deg, #22d3aa, #1ebc96);
-    border: none;
-    border-radius: 15px;
-    padding: 18px;
-    color: #0a0e14;
-    font-family: 'Orbitron', monospace;
-    font-size: 14px;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(34, 211, 170, 0.25);
-}
+        .control-icon svg {
+            width: 18px;
+            height: 18px;
+            fill: #22d3aa;
+        }
 
-.save-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    transition: left 0.5s;
-}
+        .control-text {
+            color: #ffffff;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
 
-.save-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 40px rgba(34, 211, 170, 0.3);
-}
+        .control-title {
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
 
-.save-button:hover::before {
-    left: 100%;
-}
+        .control-subtext {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 11px;
+            margin-top: 10px;
+        }
 
-.save-button:active {
-    transform: translateY(-1px);
-}
+        .control-key {
+            background: linear-gradient(135deg, #2a3441, #3d4a5c);
+            color: #22d3aa;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid rgba(34, 211, 170, 0.25);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
 
-.weapon-info {
-    text-align: center;
-    margin-top: 20px;
-    padding: 12px;
-    background: linear-gradient(135deg, rgba(34, 211, 170, 0.04), rgba(34, 211, 170, 0.02));
-    border: 1px solid rgba(34, 211, 170, 0.15);
-    border-radius: 10px;
-}
+        .key-accent {
+            background: rgba(34, 211, 170, 0.12);
+            color: #22d3aa;
+            border-color: rgba(34, 211, 170, 0.6);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 8px rgba(34, 211, 170, 0.18);
+        }
 
-.weapon-name {
-    color: #22d3aa;
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
+        .headshot-card {
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.04), rgba(255, 255, 255, 0.01));
+            border-color: rgba(34, 211, 170, 0.22);
+        }
 
-.status-indicators {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    display: flex;
-    gap: 8px;
-}
+        .headshot-card.active {
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.16), rgba(34, 211, 170, 0.08));
+            border-color: rgba(34, 211, 170, 0.6);
+            box-shadow: 0 10px 30px rgba(34, 211, 170, 0.25);
+        }
 
-.status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #22d3aa;
-    box-shadow: 0 0 10px rgba(34, 211, 170, 0.4);
-    animation: pulse 2s infinite;
-}
+        .toggle-status {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            margin-top: 6px;
+            text-transform: uppercase;
+        }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1); }
-    50% { opacity: 0.5; transform: scale(0.8); }
-}
+        .toggle-status.on {
+            background: rgba(34, 211, 170, 0.15);
+            color: #22d3aa;
+            border: 1px solid rgba(34, 211, 170, 0.5);
+        }
 
-@media (max-width: 400px) {
-    .recoil-panel {
-        width: 340px;
-        right: 1%;
-    }
-}
+        .toggle-status.off {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.5);
+        }
+
+        .save-section {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 25px;
+        }
+
+        .save-button {
+            width: 100%;
+            background: linear-gradient(135deg, #22d3aa, #1ebc96);
+            border: none;
+            border-radius: 15px;
+            padding: 18px;
+            color: #0a0e14;
+            font-family: 'Orbitron', monospace;
+            font-size: 14px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(34, 211, 170, 0.25);
+        }
+
+        .save-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transition: left 0.5s;
+        }
+
+        .save-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(34, 211, 170, 0.3);
+        }
+
+        .save-button:hover::before {
+            left: 100%;
+        }
+
+        .save-button:active {
+            transform: translateY(-1px);
+        }
+
+        .weapon-info {
+            text-align: center;
+            margin-top: 20px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(34, 211, 170, 0.04), rgba(34, 211, 170, 0.02));
+            border: 1px solid rgba(34, 211, 170, 0.15);
+            border-radius: 10px;
+        }
+
+        .weapon-name {
+            color: #22d3aa;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-indicators {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #22d3aa;
+            box-shadow: 0 0 10px rgba(34, 211, 170, 0.4);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 0.5;
+                transform: scale(0.8);
+            }
+        }
+
+        @media (max-width: 400px) {
+            .recoil-panel {
+                width: 340px;
+                right: 1%;
+            }
+        }
     </style>
 </head>
+
 <body>
     <div id="app">
+        <div v-if="hudVisible" class="hud-panel">
+            <div>
+                <div class="hud-label">Target Health</div>
+                <div class="hud-value">{{ hud.health }} / {{ hud.maxHealth }}</div>
+            </div>
+            <div>
+                <div class="hud-label">Target Armour</div>
+                <div class="hud-value">{{ hud.armour }} / {{ hud.maxArmour }}</div>
+            </div>
+        </div>
+
         <div class="recoil-panel" :class="{ hidden: !isVisible }">
             <div class="cyber-grid"></div>
             <div class="status-indicators">
@@ -323,12 +434,12 @@ body {
                 <div class="status-dot" style="animation-delay: 0.5s;"></div>
                 <div class="status-dot" style="animation-delay: 1s;"></div>
             </div>
-            
+
             <div class="panel-header">
-                <div class="header-title">Recoil Control</div>
+                <div class="header-title">{{ headerTitle }}</div>
                 <div class="header-subtitle">Weapon Modification System</div>
             </div>
-            
+
             <div class="recoil-display">
                 <div class="recoil-label">Modifier Value</div>
                 <div class="recoil-value">{{ currentModifier.toFixed(2) }}</div>
@@ -336,39 +447,57 @@ body {
                     <div class="recoil-bar-fill" :style="{ width: (currentModifier * 10) + '%' }"></div>
                 </div>
             </div>
-            
+
             <div class="controls-section">
                 <div class="control-row">
                     <div class="control-card">
                         <div class="control-content">
                             <div class="control-icon">
                                 <svg viewBox="0 0 24 24">
-                                    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/>
+                                    <path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z" />
                                 </svg>
                             </div>
                             <div class="control-text">Reduce</div>
                         </div>
                     </div>
-                    
+
                     <div class="control-card">
                         <div class="control-content">
                             <div class="control-icon">
                                 <svg viewBox="0 0 24 24">
-                                    <path d="M7.41 8.84L12 13.42l4.59-4.58L18 10l-6 6-6-6z"/>
+                                    <path d="M7.41 8.84L12 13.42l4.59-4.58L18 10l-6 6-6-6z" />
                                 </svg>
                             </div>
                             <div class="control-text">Increase</div>
                         </div>
                     </div>
                 </div>
+                <div v-if="mode === 'damage'" class="control-row">
+                    <div class="control-card headshot-card" :class="{ active: headshotFix }"
+                        @click="toggleHeadshotFix()">
+                        <div class="control-content">
+                            <div class="control-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path
+                                        d="M12 2a7 7 0 00-7 7v2a5 5 0 00-3 4v3h6v-3a3 3 0 016 0v3h6v-3a5 5 0 00-3-4V9a7 7 0 00-7-7zm0 4a3 3 0 013 3v1H9V9a3 3 0 013-3z" />
+                                </svg>
+                            </div>
+                            <div class="control-title">Headshot -150 (Armour first)</div>
+                            <div class="toggle-status" :class="headshotFix ? 'on' : 'off'">{{ headshotFix ? 'ENABLED' :
+                                'DISABLED' }}</div>
+                            <div class="control-subtext">Press <span class="control-key key-accent">H</span> to {{
+                                headshotFix ? 'disable' : 'enable' }}</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
+
             <div class="save-section">
-                <button class="save-button" @click="saveAndExit">
+                <button class="save-button" @click="saveAndExit()">
                     Save Config [ENTER]
                 </button>
             </div>
-            
+
             <div v-if="weaponName" class="weapon-info">
                 <div class="weapon-name">{{ weaponName }}</div>
             </div>
@@ -383,43 +512,64 @@ body {
                 return {
                     isVisible: false,
                     currentModifier: 1.0,
-                    weaponName: ''
+                    weaponName: '',
+                    mode: 'recoil',
+                    saveEvent: 'peleg:client:saveRecoil',
+                    headerTitle: 'Recoil Control',
+                    hudVisible: false,
+                    hud: { health: 200, armour: 100, maxHealth: 200, maxArmour: 100 },
+                    headshotFix: false
                 }
             },
             methods: {
                 showUI(modifier, weaponName) {
                     this.currentModifier = modifier;
                     this.weaponName = weaponName;
+                    this.mode = 'recoil';
+                    this.saveEvent = 'peleg:client:saveRecoil';
+                    this.headerTitle = 'Recoil Control';
                     this.isVisible = true;
                 },
-                
+
                 hideUI() {
                     this.isVisible = false;
                 },
-                
+
                 updateModifier(modifier) {
                     this.currentModifier = modifier;
                 },
-                
+                toggleHeadshotFix() {
+                    fetch(`https://${GetParentResourceName()}/peleg:client:toggleHeadshotFix`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+                        body: JSON.stringify({})
+                    });
+                },
+
                 saveAndExit() {
-                    fetch(`https://${GetParentResourceName()}/peleg:client:saveRecoil`, {
+                    const endpoint = this.saveEvent || 'peleg:client:saveRecoil';
+                    fetch(`https://${GetParentResourceName()}/${endpoint}`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json; charset=UTF-8',
                         },
                         body: JSON.stringify({})
                     });
-                    
+
                     this.hideUI();
                 }
             },
             mounted() {
                 window.addEventListener('message', (event) => {
                     const data = event.data;
-                    
+
                     switch (data.type) {
                         case 'showUI':
                             this.showUI(data.modifier, data.weaponName);
+                            if (data.mode) this.mode = data.mode;
+                            if (data.saveEvent) this.saveEvent = data.saveEvent;
+                            this.headerTitle = this.mode === 'damage' ? 'Damage Control' : 'Recoil Control';
+                            if (typeof data.headshotFix !== 'undefined') this.headshotFix = !!data.headshotFix;
                             break;
                         case 'hideUI':
                             this.hideUI();
@@ -427,10 +577,30 @@ body {
                         case 'updateModifier':
                             this.updateModifier(data.modifier);
                             break;
+                        case 'showHUD':
+                            this.hudVisible = true;
+                            this.hud.health = data.health ?? this.hud.health;
+                            this.hud.armour = data.armour ?? this.hud.armour;
+                            this.hud.maxHealth = data.maxHealth ?? this.hud.maxHealth;
+                            this.hud.maxArmour = data.maxArmour ?? this.hud.maxArmour;
+                            break;
+                        case 'hideHUD':
+                            this.hudVisible = false;
+                            break;
+                        case 'updateTargetStats':
+                            this.hud.health = data.health ?? this.hud.health;
+                            this.hud.armour = data.armour ?? this.hud.armour;
+                            if (typeof data.maxHealth !== 'undefined') this.hud.maxHealth = data.maxHealth;
+                            if (typeof data.maxArmour !== 'undefined') this.hud.maxArmour = data.maxArmour;
+                            break;
+                        case 'setHeadshotFix':
+                            this.headshotFix = !!data.value;
+                            break;
                     }
                 });
             }
         }).mount('#app');
     </script>
 </body>
+
 </html>
