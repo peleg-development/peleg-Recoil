@@ -1,6 +1,5 @@
 local recoilState = { saved = {} }
 
---- Holds the current control session information.
 local controlState = {
     active = false,
     weaponHash = nil,
@@ -13,7 +12,6 @@ local controlState = {
     originalAmmo = 0,
 }
 
---- NUI state management
 local nuiState = {
     visible = false,
     nuiId = nil
@@ -70,6 +68,7 @@ end
 --- Saves current modifier, cleans up session, restores weapon and hides UI.
 local function SaveAndExit()
     local ped = PlayerPedId()
+    local ped = PlayerPedId()
     TriggerServerEvent('peleg:server:saveRecoil', controlState.weaponHash, controlState.currentModifier)
     controlState.active = false
     HideNUI()
@@ -81,7 +80,7 @@ local function SaveAndExit()
         SetCurrentPedWeapon(ped, GetHashKey('WEAPON_UNARMED'), true)
     end
     TriggerEvent('chat:addMessage', {
-        args = {'🎯 Recoil Control', string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName)}
+        args = { '🎯 Recoil Control', string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName) }
     })
 end
 
@@ -90,11 +89,10 @@ end
 local function StartControlMode(weaponName)
     local ped = PlayerPedId()
     local weaponHash = GetHashKey(weaponName)
-    
-    -- Store original weapon state
+
     local _, originalWeapon = GetCurrentPedWeapon(ped, true)
     local originalAmmo = GetAmmoInPedWeapon(ped, originalWeapon)
-    
+
     controlState.active = true
     controlState.weaponName = weaponName
     controlState.weaponHash = weaponHash
@@ -102,13 +100,11 @@ local function StartControlMode(weaponName)
     controlState.originalWeapon = originalWeapon
     controlState.originalAmmo = originalAmmo
 
-    -- Give test weapon
     GiveWeaponToPed(ped, weaponHash, 9999, false, true)
     SetCurrentPedWeapon(ped, weaponHash, true)
     SetPedInfiniteAmmo(ped, true, weaponHash)
     SetPedInfiniteAmmoClip(ped, true)
 
-    -- Show NUI interface
     ShowNUI(controlState.currentModifier, weaponName)
 
     CreateThread(function()
@@ -124,10 +120,12 @@ local function StartControlMode(weaponName)
             end
 
             if IsControlJustPressed(0, 172) then
-                controlState.currentModifier = math.min(controlState.currentModifier + controlState.step, controlState.maxModifier)
+                controlState.currentModifier = math.min(controlState.currentModifier + controlState.step,
+                    controlState.maxModifier)
                 UpdateNUI(controlState.currentModifier)
             elseif IsControlJustPressed(0, 173) then
-                controlState.currentModifier = math.max(controlState.currentModifier - controlState.step, controlState.minModifier)
+                controlState.currentModifier = math.max(controlState.currentModifier - controlState.step,
+                    controlState.minModifier)
                 UpdateNUI(controlState.currentModifier)
             elseif IsControlJustPressed(0, 170) or IsControlJustPressed(0, 191) then -- F3 to save
                 SaveAndExit()
@@ -161,26 +159,26 @@ end)
 RegisterNUICallback('peleg:client:saveRecoil', function(data, cb)
     if controlState.active then
         local ped = PlayerPedId()
-        
+
         TriggerServerEvent('peleg:server:saveRecoil', controlState.weaponHash, controlState.currentModifier)
         controlState.active = false
-        
+
         HideNUI()
-        
+
         RemoveWeaponFromPed(ped, controlState.weaponHash)
-        
+
         if controlState.originalWeapon and controlState.originalWeapon ~= 0 then
             GiveWeaponToPed(ped, controlState.originalWeapon, controlState.originalAmmo, false, true)
             SetCurrentPedWeapon(ped, controlState.originalWeapon, true)
         else
             SetCurrentPedWeapon(ped, GetHashKey('WEAPON_UNARMED'), true)
         end
-        
+
         TriggerEvent('chat:addMessage', {
-            args = {'🎯 Recoil Control', string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName)}
+            args = { '🎯 Recoil Control', string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName) }
         })
     end
-    
+
     if cb then cb('ok') end
 end)
 
