@@ -1,7 +1,3 @@
----@diagnostic disable: undefined-global
-local playerPed = PlayerPedId()
-
---- Persists and controls recoil tuning state.
 local recoilState = { saved = {} }
 
 --- Holds the current control session information.
@@ -166,26 +162,20 @@ RegisterNUICallback('peleg:client:saveRecoil', function(data, cb)
     if controlState.active then
         local ped = PlayerPedId()
         
-        -- Save and exit
         TriggerServerEvent('peleg:server:saveRecoil', controlState.weaponHash, controlState.currentModifier)
         controlState.active = false
         
-        -- Hide NUI
         HideNUI()
         
-        -- Remove test weapon completely
         RemoveWeaponFromPed(ped, controlState.weaponHash)
         
-        -- Restore original weapon if it exists
         if controlState.originalWeapon and controlState.originalWeapon ~= 0 then
             GiveWeaponToPed(ped, controlState.originalWeapon, controlState.originalAmmo, false, true)
             SetCurrentPedWeapon(ped, controlState.originalWeapon, true)
         else
-            -- If no original weapon, set to unarmed
             SetCurrentPedWeapon(ped, GetHashKey('WEAPON_UNARMED'), true)
         end
         
-        -- Show save confirmation
         TriggerEvent('chat:addMessage', {
             args = {'🎯 Recoil Control', string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName)}
         })
