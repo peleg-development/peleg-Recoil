@@ -54,19 +54,9 @@ end
 ---@diagnostic disable: undefined-global
 local persistentState = readJsonFile()
 
-RegisterNetEvent('peleg:server:requestRecoilData')
-AddEventHandler('peleg:server:requestRecoilData', function()
+RegisterNetEvent('peleg:server:requestRecoilData', function()
     local src = source
-    local license = getPlayerLicense(src)
-    if not license then
-        TriggerClientEvent('peleg:client:syncRecoilData', src, {})
-        return
-    end
-    
-    if not isLicenseAllowed(license) then
-        TriggerClientEvent('peleg:client:syncRecoilData', src, {})
-        return
-    end
+
     
     local recoilData = {}
     for weaponHash, weaponData in pairs(persistentState.weapons) do
@@ -78,8 +68,7 @@ AddEventHandler('peleg:server:requestRecoilData', function()
     TriggerClientEvent('peleg:client:syncRecoilData', src, recoilData)
 end)
 
-RegisterNetEvent('peleg:server:saveRecoil')
-AddEventHandler('peleg:server:saveRecoil', function(weaponHash, recoilValue)
+RegisterNetEvent('peleg:server:saveRecoil', function(weaponHash, recoilValue)
     local src = source
     local license = getPlayerLicense(src)
     if not license then

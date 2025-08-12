@@ -35,13 +35,6 @@ local function GetModifierForWeapon(weaponHash)
     return 1.0
 end
 
---- Applies recoil amplitude taking into account movement, weapon characteristics and per-weapon modifier.
---- @param ped number
---- @param weapon number
---- @param modifier number
-function ApplyRecoilBasedOnStateOrSpeed(ped, weapon, modifier)
-    SetWeaponRecoilShakeAmplitude(weapon, modifier)
-end
 
 --- Shows the HTML NUI interface for recoil control.
 --- @param modifier number
@@ -155,18 +148,16 @@ CreateThread(function()
         if IsPedArmed(ped, 6) then
             local _, currentWeapon = GetCurrentPedWeapon(ped, true)
             local modifier = GetModifierForWeapon(currentWeapon)
-            ApplyRecoilBasedOnStateOrSpeed(ped, currentWeapon, modifier)
+            SetWeaponRecoilShakeAmplitude(currentWeapon, modifier)
         end
     end
 end)
 
-RegisterNetEvent('peleg:client:syncRecoilData')
-AddEventHandler('peleg:client:syncRecoilData', function(data)
+RegisterNetEvent('peleg:client:syncRecoilData', function(data)
     recoilState.saved = data or {}
 end)
 
-RegisterNetEvent('peleg:client:startRecoilControl')
-AddEventHandler('peleg:client:startRecoilControl', function(weaponName)
+RegisterNetEvent('peleg:client:startRecoilControl', function(weaponName)
     StartControlMode(weaponName)
 end)
 
