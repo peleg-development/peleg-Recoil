@@ -1,7 +1,7 @@
 # **Peleg Recoil**
 
 ### **Preview:**
-https://www.youtube.com/watch?v=MXBYxAwxjv0
+https://youtu.be/4Jx5Ws3EC3M
 
 ### **Description:**
 Support: https://discord.gg/9AuTeZPgrX
