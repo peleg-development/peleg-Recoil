@@ -244,7 +244,7 @@ end
 --- @param weaponHash number
 --- @param value number
 local function applyDamageModifier(weaponHash, value)
-    Citizen.InvokeNative(0x4757F00BC6323CFE, weaponHash, value)
+    SetWeaponDamageModifier(weaponHash, value)
 end
 
 ----------------------------------------
@@ -576,7 +576,7 @@ CreateThread(function()
     TriggerServerEvent('peleg:server:requestRecoilData')
     TriggerServerEvent('peleg:server:requestDamageData')
     TriggerServerEvent('peleg:server:requestHeadshotFix')
-    TriggerServerEvent('peleg:server:requestPermission') 
+    TriggerServerEvent('peleg:server:requestPermission')
 end)
 
 
