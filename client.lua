@@ -1,14 +1,3 @@
---[[
-  Controls
-    ↑ (172)  Increase modifier
-    ↓ (173)  Decrease modifier
-    F3 (170) or Enter (191)  Save & exit current mode
-    H (74)   Toggle headshot -150 (damage mode)
-]]
-
-----------------------------------------
--- Constants
-----------------------------------------
 local CTRL_INC           = 172 -- Up
 local CTRL_DEC           = 173 -- Down
 local CTRL_SAVE_A        = 170 -- F3
@@ -19,9 +8,6 @@ local MAX_HEALTH         = 200
 local MAX_ARMOUR         = 100
 local HEAD_BONE          = 31086
 
-----------------------------------------
--- State
-----------------------------------------
 local recoilState        = { saved = {} }
 local headshotState      = { saved = {} }
 local damageState        = { saved = {} }
@@ -61,16 +47,10 @@ local nuiState           = {
     mode    = 'recoil', -- 'recoil' | 'damage'
 }
 
-
-----------------------------------------
--- Utility
-----------------------------------------
---- Returns hash of a weapon or name.
 --- @param name string
 --- @return number
 local function H(name) return GetHashKey(name) end
 
---- Prints a message to the chat.
 --- @param title string
 --- @param msg string
 local function chat(title, msg)
@@ -88,10 +68,6 @@ local function clamp(x, a, b)
     return x
 end
 
-----------------------------------------
--- NUI
-----------------------------------------
---- Shows the NUI.
 --- @param modifier number
 --- @param weaponName string
 --- @param mode 'recoil'|'damage'
@@ -110,24 +86,18 @@ local function showNUI(modifier, weaponName, mode, saveEvent)
     })
 end
 
---- Hides the NUI.
 local function hideNUI()
     if not nuiState.visible then return end
     nuiState.visible = false
     SendNUIMessage({ type = 'hideUI' })
 end
 
---- Updates the modifier in the NUI.
 --- @param value number
 local function updateNUI(value)
     if not nuiState.visible then return end
     SendNUIMessage({ type = 'updateModifier', modifier = value })
 end
 
-----------------------------------------
--- HUD
-----------------------------------------
---- Shows the HUD with initial values.
 --- @param health number
 --- @param armour number
 local function showHUD(health, armour)
@@ -140,12 +110,10 @@ local function showHUD(health, armour)
     })
 end
 
---- Hides the HUD.
 local function hideHUD()
     SendNUIMessage({ type = 'hideHUD' })
 end
 
---- Updates HUD values.
 --- @param health number
 --- @param armour number
 local function updateHUD(health, armour)
@@ -158,16 +126,12 @@ local function updateHUD(health, armour)
     })
 end
 
-----------------------------------------
--- Weapon Helpers
-----------------------------------------
---- Applies recoil shake amplitude for the current weapon every frame.
 CreateThread(function()
     while true do
-        Wait(120)
+        Wait(0)
         local ped = cache.ped
         if IsPedArmed(ped, 6) then
-            local _, weapon = cache.weapon
+            local weapon = cache.weapon
             local mod = (controlState.active and controlState.weaponHash == weapon)
                 and controlState.currentModifier
                 or (recoilState.saved[tostring(weapon)] or 1.0)
@@ -202,7 +166,6 @@ AddEventHandler("gameEventTriggered", function(name, args)
     end
 end)
 
---- Ensures infinite ammo if the current weapon equals hash.
 --- @param ped number
 --- @param weaponHash number
 local function keepInfiniteAmmoIfCurrent(ped, weaponHash)
@@ -213,7 +176,6 @@ local function keepInfiniteAmmoIfCurrent(ped, weaponHash)
     SetPedInfiniteAmmoClip(ped, true)
 end
 
---- Saves the player's current weapon and ammo into provided state.
 --- @param out table
 local function saveCurrentWeapon(out)
     local ped          = cache.ped
@@ -222,7 +184,6 @@ local function saveCurrentWeapon(out)
     out.originalAmmo   = GetAmmoInPedWeapon(ped, weap)
 end
 
---- Restores previously saved weapon or unarmed.
 --- @param saved table
 local function restoreWeapon(saved)
     local ped = cache.ped
@@ -237,20 +198,12 @@ local function restoreWeapon(saved)
     end
 end
 
-----------------------------------------
--- Damage & Recoil Natives
-----------------------------------------
---- Applies a damage multiplier for a specific weapon hash.
 --- @param weaponHash number
 --- @param value number
 local function applyDamageModifier(weaponHash, value)
     SetWeaponDamageModifier(weaponHash, value)
 end
 
-----------------------------------------
--- Target Ped Helpers
-----------------------------------------
---- Spawns an immobile target ped in front of the player.
 --- @param model string
 --- @return number ped
 local function spawnTargetPed(model)
@@ -296,7 +249,6 @@ local function spawnTargetPed(model)
     return ped
 end
 
---- Resets (re-spawns) the target ped and updates HUD/state.
 local function resetTargetPed()
     if DoesEntityExist(damageControlState.targetPed) then
         DeleteEntity(damageControlState.targetPed)
@@ -323,7 +275,6 @@ local function resetTargetPed()
     updateHUD(MAX_HEALTH, MAX_ARMOUR)
 end
 
---- Cleans up target ped, HUD, NUI, and restores weapon.
 local function cleanupDamageControl()
     hideHUD()
     hideNUI()
@@ -335,10 +286,6 @@ local function cleanupDamageControl()
     damageControlState.active = false
 end
 
-----------------------------------------
--- Modes: Recoil Control
-----------------------------------------
---- Saves current recoil value and restores weapon.
 local function saveRecoilAndExit()
     local ped = cache.ped
     TriggerServerEvent('peleg:server:saveRecoil', controlState.weaponHash, controlState.currentModifier)
@@ -350,7 +297,6 @@ local function saveRecoilAndExit()
         string.format('Saved recoil modifier %.2f for %s', controlState.currentModifier, controlState.weaponName))
 end
 
---- Starts recoil control mode for a weapon name.
 --- @param weaponName string
 local function startRecoilControl(weaponName)
     local ped = cache.ped
@@ -391,10 +337,6 @@ local function startRecoilControl(weaponName)
     end)
 end
 
-----------------------------------------
--- Modes: Damage Control
-----------------------------------------
---- Starts damage control mode for a weapon name.
 --- @param weaponName string
 local function startDamageControl(weaponName)
     local ped = cache.ped
@@ -502,9 +444,6 @@ local function startDamageControl(weaponName)
     end)
 end
 
-----------------------------------------
--- Public Events & NUI Callbacks
-----------------------------------------
 RegisterNetEvent('peleg:client:syncRecoilData', function(data)
     recoilState.saved = data or {}
 end)
@@ -569,9 +508,6 @@ RegisterNUICallback('peleg:client:toggleHeadshotFix', function(_, cb)
     if cb then cb('ok') end
 end)
 
-----------------------------------------
--- Bootstrap
-----------------------------------------
 CreateThread(function()
     TriggerServerEvent('peleg:server:requestRecoilData')
     TriggerServerEvent('peleg:server:requestDamageData')
